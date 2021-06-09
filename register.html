@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <title>Skyx Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"
+        integrity="sha512-iZIBSs+gDyTH0ZhUem9eQ1t4DcEn2B9lHxfRMeGQhyNdSUz+rb+5A3ummX6DQTOIs1XK0gOteOg/LPtSo9VJ+w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="bootstrap.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <form class="loginform" id="form">
+        <label class="error" id="errortext"></label><br>
+        <label>Username</label><br><br>
+        <input type="text" id="username"><br><br>
+        <label>Password</label> <br><br>
+        <input type="password" id="pw"><br><br>
+        <input type="submit">
+    </form>
+    <script>
+        let socket = io()
+        let form = document.getElementById("form")
+        let uname = document.getElementById("username")
+        let pw = document.getElementById("pw")
+        form.addEventListener('submit', (e) => {
+            socket.emit('checkuser', uname.content)
+        })
+        function sha512(str) {
+        return crypto.subtle.digest("SHA-512", new TextEncoder("utf-8").encode(str)).then(buf => {
+                return Array.prototype.map.call(new Uint8Array(buf), x=>(('00'+x.toString(16)).slice(-2))).join('');
+            });
+        }
+    </script>
+</body>
