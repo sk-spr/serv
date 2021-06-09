@@ -10,8 +10,15 @@
     text-align: center;
     font-size: 24;
 }
+.error{
+    color:red;
+}
+.loginform{
+    margin:auto;
+    text-align:center;
+}
 body{
-    background-color: bisque;
+    display:flex;
 }
 li{
     list-style-type:none;
