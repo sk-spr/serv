@@ -1,54 +1,85 @@
 <html>
-    <head>
-        <title>Skyx</title>
-        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-        <link rel="stylesheet" href="bootstrap.css">
-        <link rel="stylesheet" href="style.css" type="text/css">
-    </head>
-    <body>
-        <div class="title">
-            chats
-        </div>
 
-        <ul> <!-- list of chats-->
-            <li id="testdiv"> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-            <li> c1 </li>
-        </ul>
-        <script>
-            let testdiv = document.getElementById("testdiv")
-            testdiv.addEventListener('click', (mouseevent) => {
-                console.log("clicked")
-            })
-        </script>
-    </body>
+<head>
+    <title>Skyx</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"
+        integrity="sha512-iZIBSs+gDyTH0ZhUem9eQ1t4DcEn2B9lHxfRMeGQhyNdSUz+rb+5A3ummX6DQTOIs1XK0gOteOg/LPtSo9VJ+w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+
+<body>
+    <div class="title">
+        chats
+    </div>
+
+    <ul>
+        <!-- list of chats-->
+        <li id="testdiv"> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+        <li> c1 </li>
+    </ul>
+    <script>
+        let usercookie = getCookie("userhash")
+        if(usercookie == null)
+            window.location.replace("/login")
+        let testdiv = document.getElementById("testdiv")
+        testdiv.addEventListener('click', (mouseevent) => {
+            console.log("clicked")
+        })
+        let socket = io()
+
+        function getCookie(name) {
+            var dc = document.cookie;
+            var prefix = name + "=";
+            var begin = dc.indexOf("; " + prefix);
+            if (begin == -1) {
+                begin = dc.indexOf(prefix);
+                if (begin != 0) return null;
+            }
+            else {
+                begin += 2;
+                var end = document.cookie.indexOf(";", begin);
+                if (end == -1) {
+                    end = dc.length;
+                }
+            }
+            // because unescape has been deprecated, replaced with decodeURI
+            //return unescape(dc.substring(begin + prefix.length, end));
+            return decodeURI(dc.substring(begin + prefix.length, end));
+        }
+    </script>
+</body>
+
 </html>
