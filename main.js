@@ -37,7 +37,7 @@ mongoclient.connect(url, (err, client) => {
     io.on('connect', (s) => {
         console.log("connection")
         s.on("checkuser", (data) => {
-            db.collection("users").findOne({ "user-id": data.user }).then((datael) => {
+            db.collection("users").findOne({ "userid": data.user }).then((datael) => {
                 if (datael == null || datael.hash != data.hash) {
                     //user does not exist
                     console.log("user does not exist")
@@ -50,7 +50,7 @@ mongoclient.connect(url, (err, client) => {
             })
         })
         s.on("checkexists", (uname) => {
-            db.collection("users").findOne({ "user-id": uname }).then(datael => {
+            db.collection("users").findOne({ "userid": uname }).then(datael => {
                 if (datael == null)
                     io.to(s.id).emit("notexists")
                 else
@@ -61,12 +61,24 @@ mongoclient.connect(url, (err, client) => {
             console.log("registering user " + userel.user)
             console.log("hash==" + userel.hash)
             db.collection("users").insertOne({
-                "user-id": userel.user,
+                "userid": userel.user,
                 "hash": userel.hash,
                 "chats": []
             })
         })
-        
+        s.on("validateUser", userel => {
+            db.collection("users").findOne({ "userid": userel.user }).then(datael => {
+                if (datael == null) {
+                    console.log("user does not exist: " + userel.user)
+                    io.to(s.id).emit("wrongdata")
+                    return
+                }
+                console.log("user "+userel.user+" successfully validated")
+                io.to(s.id).emit("userdata", datael)
+            }, reason => {
+                console.log("query failed, reason==" + reason)
+            })
+        })
 
     })
 })
