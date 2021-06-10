@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Skyx Login</title>
+    <title>Register</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"
         integrity="sha512-iZIBSs+gDyTH0ZhUem9eQ1t4DcEn2B9lHxfRMeGQhyNdSUz+rb+5A3ummX6DQTOIs1XK0gOteOg/LPtSo9VJ+w=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -25,7 +25,20 @@
         let uname = document.getElementById("username")
         let pw = document.getElementById("pw")
         form.addEventListener('submit', (e) => {
-            socket.emit('checkuser', uname.content)
+            e.preventDefault()
+            socket.emit('checkexists', uname.value)
+        })
+        socket.on("exists", () =>{
+            let error = document.getElementById("errortext")
+            error.textContent = "This username is taken."
+            uname.value = ""
+        })
+        socket.on("notexists", () =>{
+            sha512(pw.value).then((hash) => {
+                console.log(uname.value)
+                socket.emit("registerUser", {"user":uname.value, "hash":hash})
+                //window.location.replace("/login")
+            }, reason => console.log("hash failed, reason=="+reason))
         })
         function sha512(str) {
         return crypto.subtle.digest("SHA-512", new TextEncoder("utf-8").encode(str)).then(buf => {

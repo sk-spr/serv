@@ -2,10 +2,16 @@ const express = require('express')
 const socket = require('socket.io')
 const app = express()
 const http = require('http')
-const server = http.createServer(app)
+const https = require('https')
+const fs = require('fs')
+var https_options = {
+    key: fs.readFileSync("/etc/letsencrypt/live/skyx.online/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/skyx.online/fullchain.pem")
+}
+const server = https.createServer(https_options, app)
 const io = socket(server)
 const mongoclient = require('mongodb').MongoClient
-const url  = "mongodb://127.0.0.1:27017"
+const url = "mongodb://127.0.0.1:27017"
 
 
 
@@ -22,24 +28,45 @@ app.get("/bootstrap.css", (req, res) =>
     res.sendFile(__dirname + "/resources/bootstrap.min.css"))
 app.get("/style.css", (req, res) =>
     res.sendFile(__dirname + "/style.css"))
-app.get("/register", (req, res) => res.sendFile(__dirname + "/  register.html"))
-server.listen(3000, () => console.log("listening on port 3000"))
+app.get("/register", (req, res) => res.sendFile(__dirname + "/register.html"))
+server.listen(443, () => console.log("listening on port 80"))
 
-mongoclient.connect(url, (err,client) =>{
-    if(err) throw err
+mongoclient.connect(url, (err, client) => {
+    if (err) throw err
     var db = client.db("users")
     io.on('connect', (s) => {
         console.log("connection")
-        s.on("checkuser", (data) =>{
-            db.collection("users").findOne({"user-id":data.user}).then((datael) =>{
-                if(datael == null || datael.hash != data.hash){
+        s.on("checkuser", (data) => {
+            db.collection("users").findOne({ "user-id": data.user }).then((datael) => {
+                if (datael == null || datael.hash != data.hash) {
                     //user does not exist
+                    console.log("user does not exist")
                     io.to(s.id).emit("nouser")
                     return
                 }
+                console.log("user exists")
                 io.to(s.id).emit("userret", datael)
-            }, (x) =>{
+            }, (x) => {
             })
         })
+        s.on("checkexists", (uname) => {
+            db.collection("users").findOne({ "user-id": uname }).then(datael => {
+                if (datael == null)
+                    io.to(s.id).emit("notexists")
+                else
+                    io.to(s.id).emit("exists")
+            }, reason => console.log("checking user failed, reason==" + reason))
+        })
+        s.on("registerUser", (userel) => {
+            console.log("registering user " + userel.user)
+            console.log("hash==" + userel.hash)
+            db.collection("users").insertOne({
+                "user-id": userel.user,
+                "hash": userel.hash,
+                "chats": []
+            })
+        })
+        
+
     })
 })
