@@ -22,7 +22,8 @@ app.get("/login", (req, res) =>
     res.sendFile(__dirname + "/login.html"))
 app.get("/favicon.ico", (req, res) =>
     res.sendFile(__dirname + "/resources/favicon.ico"))
-app.get("/chat/*", (req, res) => {
+app.get("/chats/*", (req, res) => {
+    console.log(req.path.replace("/chats/", ""))
 })
 app.get("/bootstrap.css", (req, res) =>
     res.sendFile(__dirname + "/resources/bootstrap.min.css"))
