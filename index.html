@@ -46,7 +46,8 @@
             console.log(datael)
             for(let i = 0; i < datael.chats.length; i++){
                 let chatelem = document.createElement("li")
-                chatelem.setAttribute("id", chat.uname)
+                chatelem.setAttribute("id", datael.chats[i].otheruser)
+                chatelem.textContent = datael.chats[i].otheruser
                 chatelem.addEventListener("click", () => window.location.replace("/chats/"+chatelem.id))
                 chatlist.appendChild(chatelem)
 
