@@ -6,79 +6,61 @@
         integrity="sha512-iZIBSs+gDyTH0ZhUem9eQ1t4DcEn2B9lHxfRMeGQhyNdSUz+rb+5A3ummX6DQTOIs1XK0gOteOg/LPtSo9VJ+w=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 
 <body>
     <div class="title">
         chats
+        <button class="add" id="addbutton">add</button>
     </div>
-
-    <ul>
-        <!-- list of chats-->
-        <li id="testdiv"> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-        <li> c1 </li>
-    </ul>
+    <div class="listbox">
+        <ul id="chatlist">
+            <!-- list of chats-->
+            <li id="testdiv"> c1 </li>
+        </ul>
+    </div>
     <script>
-        let usercookie = getCookie("userhash")
-        if(usercookie == null)
+        let usercookie = getCookie("user")
+        let hashcookie = getCookie("hash")
+        let chatlist = document.getElementById("chatlist")
+        let addbutton = document.getElementById("addbutton")
+        if (usercookie == null)
             window.location.replace("/login")
         let testdiv = document.getElementById("testdiv")
         testdiv.addEventListener('click', (mouseevent) => {
             console.log("clicked")
         })
+        addbutton.addEventListener("click", (ev) => {
+            let uid = prompt("enter username")
+        })
         let socket = io()
-        //TODO: authenticate saved user
+        socket.emit("checkuser", { "user": usercookie, "hash": hashcookie })
+        console.log(usercookie)
+        console.log(hashcookie)
+        socket.on("wrongdata", () => {
+            window.location.replace("/login")
+        })
+        socket.on("userret", datael => {
+            console.log(datael)
+            for(let i = 0; i < datael.chats.length; i++){
+                let chatelem = document.createElement("li")
+                chatelem.setAttribute("id", chat.uname)
+                chatelem.addEventListener("click", () => window.location.replace("/chats/"+chatelem.id))
+                chatlist.appendChild(chatelem)
 
-        function getCookie(name) {
-            var dc = document.cookie;
-            var prefix = name + "=";
-            var begin = dc.indexOf("; " + prefix);
-            if (begin == -1) {
-                begin = dc.indexOf(prefix);
-                if (begin != 0) return null;
             }
-            else {
-                begin += 2;
-                var end = document.cookie.indexOf(";", begin);
-                if (end == -1) {
-                    end = dc.length;
-                }
-            }
-            // because unescape has been deprecated, replaced with decodeURI
-            //return unescape(dc.substring(begin + prefix.length, end));
-            return decodeURI(dc.substring(begin + prefix.length, end));
+        })
+
+        function getCookie(cname) {
+            const cookies = Object.fromEntries(
+                document.cookie.split(/; /).map(c => {
+                    const [key, v] = c.split('=', 2);
+                    return [key, decodeURIComponent(v)];
+                }),
+            );
+            return cookies[cname];
         }
     </script>
 </body>
