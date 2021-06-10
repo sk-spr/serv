@@ -25,8 +25,6 @@ app.get("/favicon.ico", (req, res) =>
 app.get("/chats/*", (req, res) => {
     console.log(req.path.replace("/chats/", ""))
 })
-app.get("/bootstrap.css", (req, res) =>
-    res.sendFile(__dirname + "/resources/bootstrap.min.css"))
 app.get("/style.css", (req, res) =>
     res.sendFile(__dirname + "/style.css"))
 app.get("/register", (req, res) => res.sendFile(__dirname + "/register.html"))
