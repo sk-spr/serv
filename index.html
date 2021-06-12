@@ -18,7 +18,6 @@
     <div class="listbox">
         <ul id="chatlist">
             <!-- list of chats-->
-            <li id="testdiv"> c1 </li>
         </ul>
     </div>
     <script>
@@ -28,10 +27,6 @@
         let addbutton = document.getElementById("addbutton")
         if (usercookie == null)
             window.location.replace("/login")
-        let testdiv = document.getElementById("testdiv")
-        testdiv.addEventListener('click', (mouseevent) => {
-            console.log("clicked")
-        })
         
         let socket = io()
         addbutton.addEventListener("click", async function(ev) {
@@ -40,7 +35,8 @@
             socket.emit("checkadduser", uid, usercookie)
         })
         socket.on("adduserexists", (uid) => {
-            addChat(uid)
+            console.log("adduser event uid=="+uid)
+            if(!document.getElementById(uid))addChat(uid)
         })
         socket.on("addusernotexists", (uid) =>{
 
@@ -59,14 +55,21 @@
             }
         })
         function addChat(name){
+            console.log("adding "+name)
             let chatelem = document.createElement("li")
             chatelem.setAttribute("id", name)
             chatelem.textContent = name
             let button = document.createElement("button")
+            let nextbutton = document.createElement("button")
+            nextbutton.textContent= ">"
             button.textContent = "remove"
-            button.addEventListener("click", () => socket.emit("remchat", chatelem.id))
+            button.addEventListener("click", () => {
+                socket.emit("remchat", chatelem.id, usercookie)
+                button.parentNode.parentNode.removeChild(button.parentNode)
+            })
             chatelem.appendChild(button)
-            chatelem.addEventListener("click", () => window.location.replace("/chats/"+chatelem.id))
+            chatelem.appendChild(nextbutton)
+            nextbutton.addEventListener("click", () => window.location.replace("/chats/"+chatelem.id))
             chatlist.appendChild(chatelem)
         }
 

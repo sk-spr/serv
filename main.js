@@ -42,6 +42,7 @@ app.get("/chats/*", (req, res) => {
 app.get("/style.css", (req, res) =>
     res.sendFile(__dirname + "/style.css"))
 app.get("/register", (req, res) => res.sendFile(__dirname + "/register.html"))
+app.get("/test", (req, res) => res.sendFile(__dirname + "/test.html"))
 server.listen(443, () => console.log("listening on port 80"))
 
 mongoclient.connect(url, (err, client) => {
@@ -63,6 +64,20 @@ mongoclient.connect(url, (err, client) => {
                     $set: { "currentSocket": s.id }
                 })
             }, (x) => {
+            })
+        })
+        s.on("clearmessages", (uname, other) => {
+            db.collection("users").updateOne({"userid":uname, "chats.otheruser":other}, 
+            {$set: {"chats.$.messages":[]}})
+            console.log("clearing messages for user "+uname +" in chat "+other)
+            db.collection("users").findOne({"userid":uname}).then((data) => console.log(data))
+        })
+        s.on("sendmessage", (message, sender, receiver) =>{
+            console.log(sender + " sends "+JSON.stringify(message)+" to "+receiver)
+            db.collection("users").updateOne({"userid":receiver, "chats.otheruser":sender},{$push:{"chats.$.messages": message}})
+            db.collection("users").findOne({"userid":receiver}).then(datael => {
+                if(datael.currentSocket)
+                    io.to(datael.currentSocket).emit("recmessage")
             })
         })
         s.on("checkexists", (uname) => {
@@ -88,10 +103,11 @@ mongoclient.connect(url, (err, client) => {
                     io.to(s.id).emit("addusernotexists")
                     return
                 }
+                let didadd = true
                 io.to(s.id).emit("adduserexists", uname)
-                db.collection("users").findOne({ "userid": thisuname }).then(datael => {
-                    if (!(datael.chats.filter(el => el.otheruser == uname).length > 0))
-                        db.collection("users").updateOne({ "userid": thisuname }, {
+                db.collection("users").findOne({ "userid": thisuname }).then(thisel => {
+                    if (!(thisel.chats.filter(el => el.otheruser == uname).length > 0)){
+                        db.collection("users").updateOne(thisel, {
                             $push: {
                                 "chats": {
                                     "otheruser": uname,
@@ -99,9 +115,12 @@ mongoclient.connect(url, (err, client) => {
                                 }
                             }
                         }, (results) => console.log(results))
+                        db.collection("users").findOne({"userid":thisuname}).then(de => console.log(de))
+                    } else didadd = false
                 }, reason => console.log(reason))
-
-                if (!(datael.chats.filter(el => { el.otheruser == thisuname }).length > 0))
+                let otherchatswithme = datael.chats.filter(el=>el.otheruser == thisuname).length
+                console.log("other chats with this name:"+otherchatswithme)
+                if (otherchatswithme == 0){
                     db.collection("users").updateOne(datael, {
                         $push: {
                             "chats": {
@@ -110,12 +129,23 @@ mongoclient.connect(url, (err, client) => {
                             }
                         }
                     }, (results) => console.log(results))
-                io.to(datael.currentSocket).emit("adduserexists")
+                    console.log("other chats:"+JSON.stringify(datael.chats))
+                } else didadd = false
+
+                if(didadd)io.to(datael.currentSocket).emit("adduserexists", thisuname)
 
 
             }, (reason) => {
                 console.log("database read failed, reason == " + reason)
             })
+        })
+        s.on("remchat", (otherid, thisid) => {
+            db.collection("users").updateOne({"userid":thisid},
+            { $pull: {"chats": {"otheruser":otherid}}
+            },
+            {multi:true})
+            db.collection("users").updateOne({"userid":otherid},
+            {$pull: {"chats":{"otheruser":thisid}}})
         })
         s.on("registerUser", (userel) => {
             console.log("registering user " + userel.user)
@@ -141,5 +171,8 @@ mongoclient.connect(url, (err, client) => {
             })
         })
 
+    })
+    io.on("disconnect", (socket) => {
+        db.collection("users").updateOne({"currentSocket":socket},{$set:{"currentSocket":null}})
     })
 })
