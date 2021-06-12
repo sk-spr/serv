@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title>placeholder</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"
+      integrity="sha512-iZIBSs+gDyTH0ZhUem9eQ1t4DcEn2B9lHxfRMeGQhyNdSUz+rb+5A3ummX6DQTOIs1XK0gOteOg/LPtSo9VJ+w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      integrity="undefined"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/style.css" type="text/css" />
+  </head>
+  <body>
+    <div class="title">
+        <button id="backbutton">BACK </button>
+        <label id="title"></label>
+    </div>
+    <script>
+        console.log(window.location.pathname)
+        let chatname = decodeURI(window.location.pathname).replace("/chats/", "")
+        let title = document.getElementById("title")
+        let backbtn = document.getElementById("backbutton")
+        backbtn.addEventListener("click", (e) => window.location.replace("/"))
+        let messages = window.localStorage["messages_"+chatname]
+        title.textContent = chatname
+        console.log(messages)
+    </script>
+  </body>
+</html>

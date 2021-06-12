@@ -32,27 +32,43 @@
         testdiv.addEventListener('click', (mouseevent) => {
             console.log("clicked")
         })
-        addbutton.addEventListener("click", (ev) => {
-            let uid = prompt("enter username")
-        })
+        
         let socket = io()
+        addbutton.addEventListener("click", async function(ev) {
+            let uid = await prompt("enter username")
+            //input sanitation TODO
+            socket.emit("checkadduser", uid, usercookie)
+        })
+        socket.on("adduserexists", (uid) => {
+            addChat(uid)
+        })
+        socket.on("addusernotexists", (uid) =>{
+
+        })
         socket.emit("checkuser", { "user": usercookie, "hash": hashcookie })
         console.log(usercookie)
         console.log(hashcookie)
         socket.on("wrongdata", () => {
             window.location.replace("/login")
         })
+        socket.on("nouser", () => window.location.replace("/login"))
         socket.on("userret", datael => {
             console.log(datael)
             for(let i = 0; i < datael.chats.length; i++){
-                let chatelem = document.createElement("li")
-                chatelem.setAttribute("id", datael.chats[i].otheruser)
-                chatelem.textContent = datael.chats[i].otheruser
-                chatelem.addEventListener("click", () => window.location.replace("/chats/"+chatelem.id))
-                chatlist.appendChild(chatelem)
-
+                addChat(datael.chats[i].otheruser)
             }
         })
+        function addChat(name){
+            let chatelem = document.createElement("li")
+            chatelem.setAttribute("id", name)
+            chatelem.textContent = name
+            let button = document.createElement("button")
+            button.textContent = "remove"
+            button.addEventListener("click", () => socket.emit("remchat", chatelem.id))
+            chatelem.appendChild(button)
+            chatelem.addEventListener("click", () => window.location.replace("/chats/"+chatelem.id))
+            chatlist.appendChild(chatelem)
+        }
 
         function getCookie(cname) {
             const cookies = Object.fromEntries(
