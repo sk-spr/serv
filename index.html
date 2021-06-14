@@ -31,7 +31,7 @@
         let socket = io()
         addbutton.addEventListener("click", async function(ev) {
             let uid = await prompt("enter username")
-            //input sanitation TODO
+            //TODO: input sanitation
             socket.emit("checkadduser", uid, usercookie)
         })
         socket.on("adduserexists", (uid) => {
