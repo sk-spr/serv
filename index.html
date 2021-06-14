@@ -15,10 +15,12 @@
         chats
         <button class="add" id="addbutton">add</button>
     </div>
-    <div class="listbox">
+    <div class="listboxbox2">
+    <div class="listbox2">
         <ul id="chatlist">
             <!-- list of chats-->
         </ul>
+    </div>
     </div>
     <script>
         let usercookie = getCookie("user")
@@ -58,6 +60,8 @@
             console.log("adding "+name)
             let chatelem = document.createElement("li")
             chatelem.setAttribute("id", name)
+            chatelem.setAttribute("class", "chatlist")
+
             chatelem.textContent = name
             let button = document.createElement("button")
             let nextbutton = document.createElement("button")
