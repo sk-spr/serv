@@ -77,7 +77,7 @@ mongoclient.connect(url, (err, client) => {
             db.collection("users").updateOne({"userid":receiver, "chats.otheruser":sender},{$push:{"chats.$.messages": message}})
             db.collection("users").findOne({"userid":receiver}).then(datael => {
                 if(datael.currentSocket)
-                    io.to(datael.currentSocket).emit("recmessage")
+                    io.to(datael.currentSocket).emit("recmessage", datael)
             })
         })
         s.on("checkexists", (uname) => {
