@@ -16,6 +16,8 @@
         <input type="text" id="username"><br><br>
         <label>Password</label> <br><br>
         <input type="password" id="pw"><br><br>
+        <label>Decryption secret (used to encrypt and decrypt locally)</label><br><br>
+        <input type="text" id="secret" class="key"><br><br>
         <input type="submit" value="Login">
         <a href="/register">Not a user? Register</a>
     </form>
@@ -24,12 +26,22 @@
         let loginform = document.getElementById("form")
         let username = document.getElementById("username")
         let password = document.getElementById("pw")
+        let secret = document.getElementById("secret")
         loginform.addEventListener('submit', async function (e) {
             e.preventDefault()
             console.log(username.value)
             console.log(password.value)
+            if(username.value == "" || password.value == "" || secret.value == "")
+                return
             let hash = await (sha512(password.value))
             socket.emit('checkuser', { "user": username.value, "hash": hash })
+            let dateObj = new Date()
+            let time = dateObj.getTime()
+            time += 3600*1000*24*32
+            dateObj.setTime(time)
+            sha512(secret).then(hash => document.cookie = 
+                "secret="+hash+
+                ";expires="+dateObj.toUTCString()+";")
             console.log(hash)
         })
         socket.on("nouser", () => {

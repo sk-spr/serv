@@ -1,5 +1,12 @@
+@font-face {
+    font-family: 'password';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://jsbin-user-assets.s3.amazonaws.com/rafaelcastrocouto/password.ttf);
+  }
 .title {
     position:fixed;
+    display:flex;
     top:0;
     z-index: 999;
     background-color: aquamarine;
@@ -7,9 +14,12 @@
     height:8%;
     margin:0;
     padding:0;
+    align-items:center;
+    justify-content: center;
     text-align: center;
     font-size: 24;
     background:black;
+    flex-direction:row;
 }
 .error{
     color:red;
@@ -17,6 +27,9 @@
 .loginform{
     margin:auto;
     text-align:center;
+}
+.key{
+    font-family:'password'
 }
 .listboxbox{
     position:absolute;
@@ -55,9 +68,6 @@
 .back{
     align-self:flex-start;
 }
-.add{
-    align-self:flex-end;
-}
 .chatlist{
     border-radius:0px;
     border-left-width:0px;
@@ -84,14 +94,19 @@
     margin-top:10px;
     text-align:left;
 }
-.msgbox{
+.msgcontainer{
     position:fixed;
+    top: 95%;
     bottom:0;
     width:100%;
-    height:50px;
+}
+.msgbox{
+    width:100%;
+    padding-right:0;
+    height:100%;
 }
 .msginput{
-    width:90%;
+    width:80%;
 }
 body{
     display:flex;
@@ -111,3 +126,18 @@ ul{
     margin-top:0px;
     padding:0%;
 }
+@media screen and (max-aspect-ratio: 1/1) {
+    html {
+        font-size: 200% ;
+    }
+    body {
+      background: #9af; /* blue */
+    }
+    .title {
+        font-size: 200%;
+    }
+    .msgbox{
+        font-size:150%;
+    }
+  }
+  

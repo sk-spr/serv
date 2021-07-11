@@ -39,6 +39,9 @@ app.get("/chats/*", (req, res) => {
     res.sendFile(__dirname + "/chat.html")
     console.log(req.path.replace("/chats/", ""))
 })
+app.get("/chat.js", (req, res)=>res.sendFile(__dirname + "/chat.js"))
+app.get("/daypilot.js", (req, res)=>res.sendFile(__dirname + "/resources/daypilot-all.min.js"))
+app.get("/index.js", (req, res) => res.sendFile(__dirname + "/index.js"))
 app.get("/style.css", (req, res) =>
     res.sendFile(__dirname + "/style.css"))
 app.get("/register", (req, res) => res.sendFile(__dirname + "/register.html"))

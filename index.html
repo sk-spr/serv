@@ -5,6 +5,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"
         integrity="sha512-iZIBSs+gDyTH0ZhUem9eQ1t4DcEn2B9lHxfRMeGQhyNdSUz+rb+5A3ummX6DQTOIs1XK0gOteOg/LPtSo9VJ+w=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="/daypilot.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css" type="text/css">
@@ -12,7 +13,7 @@
 
 <body>
     <div class="title">
-        chats
+        <label>chats</label>
         <button class="add" id="addbutton">add</button>
     </div>
     <div class="listboxbox2">
@@ -22,70 +23,7 @@
         </ul>
     </div>
     </div>
-    <script>
-        let usercookie = getCookie("user")
-        let hashcookie = getCookie("hash")
-        let chatlist = document.getElementById("chatlist")
-        let addbutton = document.getElementById("addbutton")
-        if (usercookie == null)
-            window.location.replace("/login")
-        
-        let socket = io()
-        addbutton.addEventListener("click", async function(ev) {
-            let uid = await prompt("enter username")
-            //TODO: input sanitation
-            socket.emit("checkadduser", uid, usercookie)
-        })
-        socket.on("adduserexists", (uid) => {
-            console.log("adduser event uid=="+uid)
-            if(!document.getElementById(uid))addChat(uid)
-        })
-        socket.on("addusernotexists", (uid) =>{
-
-        })
-        socket.emit("checkuser", { "user": usercookie, "hash": hashcookie })
-        console.log(usercookie)
-        console.log(hashcookie)
-        socket.on("wrongdata", () => {
-            window.location.replace("/login")
-        })
-        socket.on("nouser", () => window.location.replace("/login"))
-        socket.on("userret", datael => {
-            console.log(datael)
-            for(let i = 0; i < datael.chats.length; i++){
-                addChat(datael.chats[i].otheruser)
-            }
-        })
-        function addChat(name){
-            console.log("adding "+name)
-            let chatelem = document.createElement("li")
-            chatelem.setAttribute("id", name)
-            chatelem.setAttribute("class", "chatlist")
-
-            chatelem.textContent = name
-            let button = document.createElement("button")
-            let nextbutton = document.createElement("button")
-            nextbutton.textContent= ">"
-            button.textContent = "remove"
-            button.addEventListener("click", () => {
-                socket.emit("remchat", chatelem.id, usercookie)
-                button.parentNode.parentNode.removeChild(button.parentNode)
-            })
-            chatelem.appendChild(button)
-            chatelem.appendChild(nextbutton)
-            nextbutton.addEventListener("click", () => window.location.replace("/chats/"+chatelem.id))
-            chatlist.appendChild(chatelem)
-        }
-
-        function getCookie(cname) {
-            const cookies = Object.fromEntries(
-                document.cookie.split(/; /).map(c => {
-                    const [key, v] = c.split('=', 2);
-                    return [key, decodeURIComponent(v)];
-                }),
-            );
-            return cookies[cname];
-        }
+    <script src="/index.js">
     </script>
 </body>
 
