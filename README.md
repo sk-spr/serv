@@ -1,1 +1,1 @@
-# simple server for my messenger
+# simple server for skyx.online
