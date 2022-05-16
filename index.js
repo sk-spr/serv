@@ -4,13 +4,13 @@ let usercookie = getCookie("user")
         let addbutton = document.getElementById("addbutton")
         if (usercookie == null)
             window.location.replace("/login")
-        if(Notification.permission === "default")
+        if(Notification.permission === "default" || Notification.permission === "denied")
             askForApproval()
         let socket = io()
         addbutton.addEventListener("click", async function(ev) {
             let uid = await DayPilot.Modal.prompt("enter username")
             //TODO: input sanitation
-            socket.emit("checkadduser", uid, usercookie)
+            socket.emit("checkadduser", uid.result, usercookie)
         })
         socket.on("adduserexists", (uid) => {
             console.log("adduser event uid=="+uid)

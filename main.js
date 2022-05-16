@@ -1,3 +1,4 @@
+// dependencies
 const express = require('express')
 const socket = require('socket.io')
 const app = express()
@@ -29,6 +30,7 @@ app.use(function (request, response, next) {
 
     next();
 })
+//get requests
 app.get('/', (req, res) =>
     res.sendFile(__dirname + "/index.html"))
 app.get("/login", (req, res) =>
@@ -48,9 +50,11 @@ app.get("/register", (req, res) => res.sendFile(__dirname + "/register.html"))
 app.get("/test", (req, res) => res.sendFile(__dirname + "/test.html"))
 server.listen(443, () => console.log("listening on port 80"))
 
+//connect to db
 mongoclient.connect(url, (err, client) => {
     if (err) throw err
     var db = client.db("users")
+    //socket.io connection
     io.on('connect', (s) => {
         console.log("connection")
         s.on("checkuser", (data) => {

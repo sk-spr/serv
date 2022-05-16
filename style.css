@@ -69,6 +69,7 @@
     align-self:flex-start;
 }
 .chatlist{
+    padding-left:50px;
     border-radius:0px;
     border-left-width:0px;
     border-right-width:0px; 
